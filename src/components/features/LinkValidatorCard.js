@@ -19,6 +19,7 @@ export default function LinkValidatorCard() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [folderName, setFolderName] = useState('');
     const [folderTip, setFolderTip] = useState(false);
+    const [downloadMode, setDownloadMode] = useState('zip'); // 'zip' | 'individual'
 
     useEffect(() => {
         setMounted(true);
@@ -90,6 +91,33 @@ export default function LinkValidatorCard() {
             console.error('Batch download error:', error);
             setStatus(prev => ({ ...prev, isLoading: false, message: 'Erro ao gerar ZIP.' }));
         }
+    };
+
+    const handleIndividualDownload = async () => {
+        const selectedEntries = status.entries.filter(e => selectedIds.has(e.id));
+        if (selectedEntries.length === 0) return;
+
+        setStatus(prev => ({ ...prev, isLoading: true, message: `Baixando 0 de ${selectedEntries.length}...` }));
+
+        for (let i = 0; i < selectedEntries.length; i++) {
+            const entry = selectedEntries[i];
+            setStatus(prev => ({ ...prev, message: `Baixando ${i + 1} de ${selectedEntries.length}: ${entry.title}` }));
+
+            const downloadUrl = `/api/download?url=${encodeURIComponent(entry.url)}&title=${encodeURIComponent(entry.title || 'audio')}&format=${format}&quality=${quality}&signature=${entry.signature}`;
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.download = `${entry.title}.${format}`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Pequeno delay para o browser processar o download antes do próximo
+            if (i < selectedEntries.length - 1) {
+                await new Promise(r => setTimeout(r, 1200));
+            }
+        }
+
+        setStatus(prev => ({ ...prev, isLoading: false, message: `✓ ${selectedEntries.length} arquivo(s) baixado(s)!` }));
     };
 
     if (!mounted) return null;
@@ -248,7 +276,10 @@ export default function LinkValidatorCard() {
                         </p>
                         {status.isValid && selectedIds.size > 0 && (
                             <button
-                                onClick={hasPlaylist ? handleBatchDownload : () => handleDownload()}
+                                onClick={hasPlaylist
+                                    ? (downloadMode === 'zip' ? handleBatchDownload : handleIndividualDownload)
+                                    : () => handleDownload()
+                                }
                                 className={styles.downloadBtn}
                                 style={{ backgroundColor: status.platform?.color }}
                                 disabled={status.isLoading}
@@ -323,28 +354,66 @@ export default function LinkValidatorCard() {
                         </div>
 
                         <div className={styles.modalFooter}>
-                            <div className={styles.folderNameField}>
+                            {/* Toggle: ZIP vs Individual */}
+                            <div className={styles.downloadModeGroup}>
                                 <label className={styles.folderNameLabel}>
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                                        <polyline points="8 17 12 21 16 17"></polyline>
+                                        <line x1="12" y1="3" x2="12" y2="21"></line>
                                     </svg>
-                                    Nome da pasta (ZIP)
+                                    Modo de download
                                 </label>
-                                <input
-                                    type="text"
-                                    className={styles.folderNameInput}
-                                    placeholder="Ex: Playlist Favoritas"
-                                    value={folderName}
-                                    onChange={e => setFolderName(e.target.value)}
-                                    maxLength={60}
-                                />
+                                <div className={styles.selector}>
+                                    <button
+                                        className={downloadMode === 'zip' ? styles.active : ''}
+                                        onClick={() => setDownloadMode('zip')}
+                                    >
+                                        🗂️ ZIP
+                                    </button>
+                                    <button
+                                        className={downloadMode === 'individual' ? styles.active : ''}
+                                        onClick={() => setDownloadMode('individual')}
+                                    >
+                                        💾 Individual
+                                    </button>
+                                </div>
                             </div>
+
+                            {/* Campo de nome do ZIP — só no modo ZIP */}
+                            {downloadMode === 'zip' && (
+                                <div className={styles.folderNameField}>
+                                    <label className={styles.folderNameLabel}>
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                                        </svg>
+                                        Nome do arquivo ZIP
+                                    </label>
+                                    <input
+                                        type="text"
+                                        className={styles.folderNameInput}
+                                        placeholder="Ex: Playlist Favoritas"
+                                        value={folderName}
+                                        onChange={e => setFolderName(e.target.value)}
+                                        maxLength={60}
+                                    />
+                                </div>
+                            )}
+
+                            {downloadMode === 'individual' && (
+                                <p className={styles.modeHint}>
+                                    Cada música será baixada separadamente no seu computador.
+                                </p>
+                            )}
+
                             <button
                                 className={styles.downloadBtn}
                                 style={{ width: '100%', backgroundColor: status.platform?.color || '#0a84ff' }}
                                 onClick={() => setIsModalOpen(false)}
                             >
-                                Confirmar Seleção ({selectedIds.size})
+                                {downloadMode === 'zip'
+                                    ? `Confirmar — ZIP (${selectedIds.size})`
+                                    : `Confirmar — Individual (${selectedIds.size})`
+                                }
                             </button>
                         </div>
                     </div>
