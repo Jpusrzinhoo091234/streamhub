@@ -1,0 +1,102 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+:root {
+    --bg-base: #000000;
+    --glass-bg: rgba(28, 28, 30, 0.75);
+    --glass-border: rgba(255, 255, 255, 0.10);
+    --glass-highlight: rgba(255, 255, 255, 0.06);
+    --text-primary: #f5f5f7;
+    --text-secondary: rgba(235, 235, 245, 0.60);
+    --text-tertiary: rgba(235, 235, 245, 0.30);
+    --accent: #0a84ff;
+    --spring: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+}
+
+/* ─── Background ─── */
+.background-elements {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(30, 30, 35, 0.9) 0%, transparent 70%),
+        #000000;
+}
+
+.blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(140px);
+    animation: drift 25s infinite alternate ease-in-out;
+    will-change: transform;
+}
+
+.blob-1 {
+    width: 700px;
+    height: 700px;
+    background: radial-gradient(circle, #5e5ce6 0%, transparent 70%);
+    opacity: 0.07;
+    top: -20%;
+    left: -15%;
+    animation-duration: 30s;
+}
+
+.blob-2 {
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, #0a84ff 0%, transparent 70%);
+    opacity: 0.06;
+    bottom: -20%;
+    right: -10%;
+    animation-delay: -8s;
+    animation-duration: 35s;
+}
+
+.blob-3 {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, #bf5af2 0%, transparent 70%);
+    opacity: 0.05;
+    top: 40%;
+    left: 55%;
+    animation-delay: -15s;
+    animation-duration: 28s;
+}
+
+@keyframes drift {
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    33% {
+        transform: translate(40px, 60px) scale(1.05);
+    }
+
+    66% {
+        transform: translate(-30px, 30px) scale(0.97);
+    }
+
+    100% {
+        transform: translate(20px, -40px) scale(1.02);
+    }
+}
