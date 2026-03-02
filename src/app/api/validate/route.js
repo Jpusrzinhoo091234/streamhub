@@ -181,10 +181,24 @@ export async function POST(request) {
                     return NextResponse.json({ isValid: false, message: 'Tempo esgotado na validação.' });
                 }
                 console.error('Validation error:', ytError);
+                // Mesmo com erro nos metadados, retorna a URL original com assinatura
+                // para que o botão de download apareça ao usuário
+                const secret = process.env.APP_SECRET || 'fallback_secret';
+                const fallbackEntry = [{
+                    id: 'fallback',
+                    title: 'Download',
+                    url: url,
+                    duration: 'N/A',
+                    uploader: platform.name,
+                    thumbnail: '',
+                    signature: crypto.createHmac('sha256', secret).update(url).digest('hex')
+                }];
                 return NextResponse.json({
                     isValid: true,
+                    isPlaylist: false,
                     platform: platform,
-                    message: 'Erro ao extrair metadados detalhados.'
+                    entries: fallbackEntry,
+                    message: 'Link pronto! (metadados limitados)'
                 });
             }
         }

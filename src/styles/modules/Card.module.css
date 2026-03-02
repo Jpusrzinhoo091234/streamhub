@@ -835,3 +835,74 @@
     padding: 0 2px;
     font-weight: 400;
 }
+
+/* ─── Botão de Download Full-Width ─── */
+.downloadBtnFull {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 13px 20px;
+    border-radius: 16px;
+    border: none;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    background: linear-gradient(135deg, #0a84ff, #0070d4);
+    box-shadow:
+        0 0 0 0.5px rgba(255, 255, 255, 0.15) inset,
+        0 1px 0 rgba(255, 255, 255, 0.12) inset,
+        0 4px 16px rgba(10, 132, 255, 0.35);
+    margin-top: 4px;
+    flex-shrink: 0;
+    animation: fadeSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    position: relative;
+    overflow: hidden;
+}
+
+.downloadBtnFull::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(rgba(255, 255, 255, 0.08), transparent);
+    pointer-events: none;
+}
+
+.downloadBtnFull:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow:
+        0 0 0 0.5px rgba(255, 255, 255, 0.18) inset,
+        0 1px 0 rgba(255, 255, 255, 0.15) inset,
+        0 8px 24px rgba(10, 132, 255, 0.45);
+}
+
+.downloadBtnFull:active:not(:disabled) {
+    transform: scale(0.98) translateY(0);
+}
+
+.downloadBtnFull:disabled {
+    opacity: 0.38;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* ─── Row de Processando ─── */
+.downloadingRow {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px;
+    font-size: 12px;
+    color: rgba(235, 235, 245, 0.55);
+    font-weight: 500;
+    animation: fadeSlideIn 0.3s ease forwards;
+}

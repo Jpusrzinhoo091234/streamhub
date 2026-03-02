@@ -267,38 +267,42 @@ export default function LinkValidatorCard() {
             <div className={styles.messageContainer}>
                 {status.isLoading && <div className={styles.loader}></div>}
                 {!status.isLoading && status.message && (
-                    <div className={styles.statusRow}>
-                        <p
-                            className={`${styles.message} ${status.isValid ? styles.valid : styles.invalid}`}
-                            style={{ color: status.platform?.color }}
-                        >
-                            {status.message}
-                        </p>
-                        {status.isValid && selectedIds.size > 0 && (
-                            <button
-                                onClick={hasPlaylist
-                                    ? (downloadMode === 'zip' ? handleBatchDownload : handleIndividualDownload)
-                                    : () => handleDownload()
-                                }
-                                className={styles.downloadBtn}
-                                style={{ backgroundColor: status.platform?.color }}
-                                disabled={status.isLoading}
-                            >
-                                {status.isLoading ? (
-                                    <div className={styles.loader} style={{ width: '14px', height: '14px', borderTopColor: '#fff' }}></div>
-                                ) : (
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4"></path>
-                                        <polyline points="7 10 12 15 17 10"></polyline>
-                                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                                    </svg>
-                                )}
-                                {status.isLoading ? 'Processando...' : (hasPlaylist ? `Baixar Seleção` : 'Iniciar Download')}
-                            </button>
-                        )}
-                    </div>
+                    <p
+                        className={`${styles.message} ${status.isValid ? styles.valid : styles.invalid}`}
+                        style={{ color: status.platform?.color }}
+                    >
+                        {status.message}
+                    </p>
                 )}
             </div>
+
+            {/* Botão de Download — separado, bem visível */}
+            {status.isValid && selectedIds.size > 0 && !status.isLoading && (
+                <button
+                    onClick={hasPlaylist
+                        ? (downloadMode === 'zip' ? handleBatchDownload : handleIndividualDownload)
+                        : () => handleDownload()
+                    }
+                    className={styles.downloadBtnFull}
+                    style={{ backgroundColor: status.platform?.color }}
+                    disabled={status.isLoading}
+                >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    {hasPlaylist ? `Baixar Seleção (${selectedIds.size})` : 'Iniciar Download'}
+                </button>
+            )}
+
+            {status.isLoading && (
+                <div className={styles.downloadingRow}>
+                    <div className={styles.loader} style={{ width: '14px', height: '14px' }}></div>
+                    <span>Processando...</span>
+                </div>
+            )}
+
 
             {/* Track Selection Modal */}
             {isModalOpen && (
